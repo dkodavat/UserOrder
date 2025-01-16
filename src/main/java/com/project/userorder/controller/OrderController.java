@@ -1,5 +1,6 @@
 package com.project.userorder.controller;
 
+import com.project.userorder.dto.OrderDTO;
 import com.project.userorder.entity.Order;
 import com.project.userorder.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,9 +16,14 @@ public class OrderController {
 
     @Autowired
     private OrderService orderService;
+    
+    @PostMapping
+    public Order createOrder(@RequestBody Order order) {
+        return orderService.createOrder(order);
+    }
 
-    @GetMapping
-    public List<Order> getAllOrders() {
+    @GetMapping  
+    public List<OrderDTO> getAllOrders() {
         return orderService.getAllOrders();
     }
 
@@ -28,10 +34,7 @@ public class OrderController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @PostMapping
-    public Order createOrder(@RequestBody Order order) {
-        return orderService.createOrder(order);
-    }
+   
 
     @PutMapping("/{id}")
     public ResponseEntity<Order> updateOrder(@PathVariable Long id, @RequestBody Order orderDetails) {
