@@ -25,8 +25,10 @@ public class UserService {
 
     public User getUserById(Long id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("User with " + id + " does not exist"));
+                .orElseThrow(() -> new ResourceNotFoundException("User does not exist")); // Update message here
     }
+
+
 
 
     public User updateUser(Long id, User userDetails) {

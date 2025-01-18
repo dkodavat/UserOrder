@@ -1,6 +1,7 @@
 package com.project.userorder.controller;
 
 import com.project.userorder.entity.User;
+import com.project.userorder.exception.ResourceNotFoundException;
 import com.project.userorder.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -17,18 +18,25 @@ public class UserController {
     private UserService userService;
     
     @PostMapping
-    public User createUser(@RequestBody User user) {
-        return userService.createUser(user);
+    public ResponseEntity<User> createUser(@RequestBody User user) {
+        User createdUser = userService.createUser(user);
+        return ResponseEntity.status(201).body(createdUser);  // Return ResponseEntity with CREATED status
     }
 
     @GetMapping
     public List<User> getAllUsers() {
         return userService.getAllUsers();
     }
+    
+    
     @GetMapping("/{id}")
     public ResponseEntity<User> getUserById(@PathVariable Long id) {
-        User user = userService.getUserById(id);  
-        return ResponseEntity.ok(user);  
+        try {
+            User user = userService.getUserById(id);
+            return ResponseEntity.ok(user);
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.notFound().build(); // Returns 404 if the user is not found
+        }
     }
 
    
