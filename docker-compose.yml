@@ -1,0 +1,28 @@
+version: "3.8"
+
+services:
+  psql-db:
+    image: postgres
+    container_name: psql-db
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=1234
+      - POSTGRES_DB=UserOrder
+    ports:
+      - '5433:5432'  # Map the container's internal PostgreSQL port (5432) to the external port (5433)
+
+  recipe:
+    container_name: UserOrder
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - '8081:8081'  # Expose the Spring Boot application on port 8081
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://psql-db:5432/UserOrder  # Connect to internal PostgreSQL port (5432)
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=1234
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+    depends_on:
+      - psql-db
