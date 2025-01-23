@@ -2,7 +2,11 @@ package com.project.userorder.service;
 
 import com.project.userorder.dto.OrderDTO;
 import com.project.userorder.entity.Order;
+import com.project.userorder.entity.User;
+import com.project.userorder.exception.ResourceNotFoundException;
 import com.project.userorder.repository.OrderRepository;
+import com.project.userorder.repository.UserRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +19,9 @@ public class OrderService {
 
     @Autowired
     private OrderRepository orderRepository;
-    
+    @Autowired
+    private UserRepository userRepository;
+
     public Order createOrder(Order order) {
         return orderRepository.save(order);
     }
@@ -23,7 +29,7 @@ public class OrderService {
     public List<OrderDTO> getAllOrders() {
         return orderRepository.findAll().stream()
             .map(order -> {
-                // Creating DTO
+                
                 OrderDTO dto = new OrderDTO();
                 dto.setId(order.getId());
                 dto.setProductName(order.getProductName());
@@ -43,17 +49,29 @@ public class OrderService {
     public Optional<Order> getOrderById(Long id) {
         return orderRepository.findById(id);
     }
-
-   
+  
     public Order updateOrder(Long id, Order orderDetails) {
         return orderRepository.findById(id).map(order -> {
             order.setProductName(orderDetails.getProductName());
             order.setDescription(orderDetails.getDescription());
             order.setPrice(orderDetails.getPrice());
-            order.setUser(orderDetails.getUser());
+
+            User user = userRepository.findById(orderDetails.getUser ().getId())
+                .orElseThrow(() -> new ResourceNotFoundException("User  not found: " + orderDetails.getUser ().getId()));
+
+            order.setUser (user);
             return orderRepository.save(order);
-        }).orElseThrow(() -> new RuntimeException("Order not found"));
+        }).orElseThrow(() -> new ResourceNotFoundException("Order not found : " + id));
     }
+//    public Order updateOrder(Long id, Order orderDetails) {
+//        return orderRepository.findById(id).map(order -> {
+//            order.setProductName(orderDetails.getProductName());
+//    order.setDescription(orderDetails.getDescription());          
+//    order.setPrice(orderDetails.getPrice());
+//            order.setUser(orderDetails.getUser());
+//           return orderRepository.save(order);
+//        }).orElseThrow(() -> new RuntimeException("Order not found"));
+//   }
 
     public void deleteOrder(Long id) {
         orderRepository.deleteById(id);

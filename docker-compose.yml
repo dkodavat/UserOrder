@@ -1,5 +1,36 @@
-version: "3.8"
+version: '3.8'
 
+services:
+  db:
+    image: postgres
+    container_name: postgresql_container
+    ports:
+      - "5433:5432"
+    environment:
+      - POSTGRES_DB=UserOrder
+      - POSTGRES_PASSWORD=1234
+      - POSTGRES_USER=postgres
+    restart: always
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: userorder
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://psql-db:5432/UserOrder  # Connect to internal PostgreSQL port (5432)
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=1234
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+    depends_on:
+      - db
+    restart: always
+
+	
+	
+	
 services:
   psql-db:
     image: postgres
@@ -10,7 +41,7 @@ services:
       - POSTGRES_PASSWORD=1234
       - POSTGRES_DB=UserOrder
     ports:
-      - '5433:5432'  # Map the container's internal PostgreSQL port (5432) to the external port (5433)
+      - '5433:5432' 
 
   recipe:
     container_name: UserOrder
@@ -18,9 +49,9 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - '8080:8080'  # Expose the Spring Boot application on port 8080
+      - '8080:8080'  
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://psql-db:5432/UserOrder  # Connect to internal PostgreSQL port (5432)
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://psql-db:5432/UserOrder  
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=1234
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
