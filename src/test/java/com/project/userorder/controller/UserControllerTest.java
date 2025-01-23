@@ -33,7 +33,7 @@ class UserControllerTest {
     private ObjectMapper objectMapper;
 
     private User user;
-
+    
     @BeforeEach
     void setUp() {
         user = new User(1L, "Lmn", "lmn@gmail.com", "9234567891", "Address");

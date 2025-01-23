@@ -20,7 +20,7 @@ public class UserController {
     @PostMapping
     public ResponseEntity<User> createUser(@RequestBody User user) {
         User createdUser = userService.createUser(user);
-        return ResponseEntity.status(201).body(createdUser);  // Return ResponseEntity with CREATED status
+        return ResponseEntity.status(201).body(createdUser);  
     }
 
     @GetMapping
@@ -35,8 +35,7 @@ public class UserController {
             User user = userService.getUserById(id);
             return ResponseEntity.ok(user);
         } catch (ResourceNotFoundException e) {
-            return ResponseEntity.notFound().build(); // Returns 404 if the user is not found
-        }
+            return ResponseEntity.notFound().build();        }
     }
 
    
