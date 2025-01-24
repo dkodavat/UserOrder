@@ -85,7 +85,11 @@ public class OrderControllerTest {
         when(orderService.getOrderById(1L)).thenReturn(Optional.empty());
 
         mockMvc.perform(get("/orders/1"))
+<<<<<<< HEAD
                 .andExpect(status().isNotFound()); 
+=======
+                .andExpect(status().isNotFound());
+>>>>>>> 3e53f539697270069cbc32632065b55b8364f398
     }
 
 

@@ -25,6 +25,7 @@ public class UserController {
 	//private String error;
     
     @PostMapping
+<<<<<<< HEAD
     public ResponseEntity<?> createUser (@Valid @RequestBody User user) {
         if (user.getName() == null || user.getName().isEmpty()) {
             return ResponseEntity.badRequest().body(new ErrorResponse("Name is required."));
@@ -42,6 +43,11 @@ public class UserController {
             }
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse("error occurred while creating the user."));
         }
+=======
+    public ResponseEntity<User> createUser(@RequestBody User user) {
+        User createdUser = userService.createUser(user);
+        return ResponseEntity.status(201).body(createdUser);  
+>>>>>>> 3e53f539697270069cbc32632065b55b8364f398
     }
 
     private boolean isValidEmail(String email) {
@@ -62,8 +68,12 @@ public class UserController {
             User user = userService.getUserById(id);
             return ResponseEntity.ok(user);
         } catch (ResourceNotFoundException e) {
+<<<<<<< HEAD
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse("User not Found")); 
         }
+=======
+            return ResponseEntity.notFound().build();        }
+>>>>>>> 3e53f539697270069cbc32632065b55b8364f398
     }
 
    
