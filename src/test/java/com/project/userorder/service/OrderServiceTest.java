@@ -1,16 +1,18 @@
 package com.project.userorder.service;
 
 import com.project.userorder.entity.Order;
+import com.project.userorder.exception.ResourceNotFoundException;
 import com.project.userorder.repository.OrderRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class OrderServiceTest {
@@ -23,20 +25,20 @@ class OrderServiceTest {
 
     @Test
     void createOrder() {
-        Order order = new Order(1L, "Product", "Description", 100.0, null);
+        Order order = new Order(1L, "Mobile", "Description", 100.0, null);
         when(orderRepository.save(any(Order.class))).thenReturn(order);
 
         Order createdOrder = orderService.createOrder(order);
 
         assertNotNull(createdOrder);
-        assertEquals("Product", createdOrder.getProductName());
+        assertEquals("Mobile", createdOrder.getProductName()); // Corrected from "Product" to "Mobile"
         assertEquals(100.0, createdOrder.getPrice());
         verify(orderRepository, times(1)).save(any(Order.class));
     }
 
     @Test
     void getOrderById_OrderFound() {
-        Order order = new Order(1L, "Product", "Description", 100.0, null);
+        Order order = new Order(1L, "Mobile", "Description", 100.0, null);
         when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
 
         Optional<Order> foundOrder = orderService.getOrderById(1L);
@@ -56,8 +58,8 @@ class OrderServiceTest {
 
     @Test
     void updateOrder() {
-        Order existingOrder = new Order(1L, "Product", "Description", 100.0, null);
-        Order updatedOrder = new Order(1L, "Updated Product", "Updated Description", 150.0, null);
+        Order existingOrder = new Order(1L, "Mobile", "Description", 100.0, null);
+        Order updatedOrder = new Order(1L, "Updated Mobile", "Updated version", 150.0, null);
 
         when(orderRepository.findById(1L)).thenReturn(Optional.of(existingOrder));
         when(orderRepository.save(any(Order.class))).thenReturn(updatedOrder);
@@ -65,19 +67,27 @@ class OrderServiceTest {
         Order result = orderService.updateOrder(1L, updatedOrder);
 
         assertNotNull(result);
-        assertEquals("Updated Product", result.getProductName());
+        assertEquals("Updated Mobile", result.getProductName()); // Corrected from "Updated Product" to "Updated Mobile"
         assertEquals(150.0, result.getPrice());
     }
 
-//    @Test
-//    void deleteOrder() {
-//        Order order = new Order(1L, "Product", "Description", 100.0, null);
-//
-//        when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
-//        doNothing().when(orderRepository).deleteById(1L);
-//
-//        orderService.deleteOrder(1L);
-//
-//        verify(orderRepository, times(1)).deleteById(1L);
-//    }
+    @Test
+    void updateOrder_OrderNotFound() {
+        Order updatedOrder = new Order(1L, "Updated Mobile", "Updated version", 150.0, null);
+
+        when(orderRepository.findById(1L)).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> {
+            orderService.updateOrder(1L, updatedOrder);
+        });
+    }
+
+    @Test
+    void deleteOrder_OrderNotFound() {
+        when(orderRepository.findById(1L)).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> {
+            orderService.deleteOrder(1L);
+        });
+    }
 }

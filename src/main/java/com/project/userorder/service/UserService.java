@@ -4,6 +4,7 @@ import com.project.userorder.entity.User;
 import com.project.userorder.exception.ResourceNotFoundException;
 import com.project.userorder.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,7 +17,14 @@ public class UserService {
     private UserRepository userRepository;
     
     public User createUser(User user) {
-        return userRepository.save(user);
+    	try {
+            return userRepository.save(user);
+    	}catch(DataIntegrityViolationException e) {
+    		if(e.getMessage().contains("users_email_key")){
+    			throw new RuntimeException("email aldready exists");
+    		}
+    		throw e;
+    	}
     }
 
     public List<User> getAllUsers() {
@@ -25,7 +33,7 @@ public class UserService {
 
     public User getUserById(Long id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("User does not exist")); // Update message here
+                .orElseThrow(() -> new ResourceNotFoundException("User does not exist")); 
     }
 
 
