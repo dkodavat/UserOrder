@@ -23,7 +23,6 @@ public class OrderController {
     private OrderService orderService;
     
     @PostMapping
-<<<<<<< HEAD
     public ResponseEntity<?> createOrder(@Valid @RequestBody Order order) {
     	if(order.getProductName() == null || order.getProductName().isEmpty()) {
     		return ResponseEntity.badRequest().body(new ErrorResponse("name is required"));
@@ -37,11 +36,6 @@ public class OrderController {
          } catch (Exception e) {
              return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse("error while creating the order."));
          }
-=======
-    public ResponseEntity<Order> createOrder(@RequestBody Order order) {
-        Order createdOrder = orderService.createOrder(order);
-        return ResponseEntity.status(201).body(createdOrder);  
->>>>>>> 3e53f539697270069cbc32632065b55b8364f398
     }
 
     @GetMapping  
@@ -50,7 +44,6 @@ public class OrderController {
     }
 
     @GetMapping("/{id}")
-<<<<<<< HEAD
     public ResponseEntity<?> getOrderById(@PathVariable Long id) {
         try {
             Order order = orderService.getOrderById(id)
@@ -67,36 +60,8 @@ public class OrderController {
             return ResponseEntity.ok(updatedOrder);
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse("order not found"));
-=======
-    public ResponseEntity<Order> getOrderById(@PathVariable Long id) {
-        return orderService.getOrderById(id)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
-    }
-
-
-    @PutMapping("/{id}")
-    public ResponseEntity<Order> updateOrder(@PathVariable Long id, @RequestBody Order orderDetails) {
-        try {
-            return ResponseEntity.ok(orderService.updateOrder(id, orderDetails));
-        } catch (ResourceNotFoundException e) {
-            System.err.println(e.getMessage());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-        } catch (Exception e) {
-            e.printStackTrace(); 
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
->>>>>>> 3e53f539697270069cbc32632065b55b8364f398
         }
     }
-//
-//   @PutMapping("/{id}")
-//  public ResponseEntity<Order> updateOrder(@PathVariable Long id, @RequestBody Order orderDetails) {
-//      try {
-//          return ResponseEntity.ok(orderService.updateOrder(id, orderDetails));
-//       } catch (RuntimeException e) {
-//           return ResponseEntity.notFound().build();
-//        }
-//  }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteOrder(@PathVariable Long id) {
